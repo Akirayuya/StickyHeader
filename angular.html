@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="component.css">
+<script src= "https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.15/angular.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<body>
+<style>
+	/* For appearance */
+	.sticky-wrap {
+		overflow-x: auto;
+		overflow-y: hidden;
+		position: relative;
+		margin: 3em 0;
+		width: 100%;
+	}
+	.sticky-wrap .sticky-thead,
+	.sticky-wrap .sticky-col,
+	.sticky-wrap .sticky-intersect {
+		opacity: 0;
+		position: absolute;
+		top: 0;
+		left: 0;
+		transition: all .125s ease-in-out;
+		z-index: 50;
+		width: auto; /* Prevent table from stretching to full size */
+	}
+		.sticky-wrap .sticky-thead {
+			box-shadow: 0 0.25em 0.1em -0.1em rgba(0,0,0,.125);
+			z-index: 100;
+			width: 100%; /* Force stretch */
+		}
+		.sticky-wrap .sticky-intersect {
+			opacity: 1;
+			z-index: 150;
+
+		}
+			.sticky-wrap .sticky-intersect th {
+				background-color: #666;
+				color: #eee;
+			}
+	.sticky-wrap td,
+	.sticky-wrap th {
+		box-sizing: border-box;
+	}
+</style>
+<div ng-app="myApp" ng-controller="customersCtrl" ng-init="search1.ord = 1;"> 
+
+
+<table class="table table-bordered">
+				    <thead>
+					<tr id="region">
+						<th colspan="5" rowspan="2" align="left">
+						&nbsp;
+						</th>
+						<th align="middle" ng-repeat="region in countries | filter : { 'parent':'ALL'} " colspan="{{region.countchild}}">{{region.id}}</th>
+					</tr>
+					<tr id="country">
+						<th align="middle" ng-repeat="country in countries | filter : { 'ord': 2} " colspan="1">{{country.id}}</th>
+					</tr>
+					</thead>
+<tbody>
+<tr class="remove_me" ng-repeat-start="x1 in names | filter:search1" ng-init="search2.ord=2; search2.parent=x1.id" style="display:none"></tr>
+	<tr class="remove_me" ng-repeat-start="x2 in names | filter:search2" ng-init="search3.ord=3; search3.parent=x2.id" style="display:none"></tr>
+        <tr class="remove_me" ng-repeat-start="x3 in names | filter:search3" ng-init="search4.ord=4; search4.parent=x3.id" style="display:none"></tr>
+			<tr class="remove_me" ng-repeat-start="x4 in names | filter:search4" ng-init="search5.ord=5; search5.parent=x4.id" style="display:none"></tr>
+				<tr ng-repeat="x5 in names | filter:search5">
+					<th rowspan="{{ x1.rowspan }}" ng-if="$parent.$parent.$parent.$first && $parent.$parent.$first && $parent.$first && $first">{{ x1.id }}</th>
+					<th rowspan="{{ x2.rowspan }}" ng-if="$parent.$parent.$first && $parent.$first && $first">{{ x2.id }}</th>
+					<th rowspan="{{ x3.rowspan }}" ng-if="$parent.$first && $first">{{ x3.id }}</th>
+					<th rowspan="{{ x4.rowspan }}" ng-if="$first">{{ x4.id }}</th>
+					<th ng-init="x4.rowspan = x4.rowspan+1; x3.rowspan = x3.rowspan+1; x2.rowspan = x2.rowspan+1; x1.rowspan = x1.rowspan+1;">{{ x5.id }}</t>
+					<td id = "remove_item" ng-repeat="i in countries" ng-if="i.ord == 2">{{$index}}</td>
+				</tr>
+			<tr class="remove_me" ng-repeat-end style="display:none"></tr>
+		<tr class="remove_me" ng-repeat-end style="display:none"></tr>
+	<tr class="remove_me" ng-repeat-end style="display:none"></tr>
+<tr class="remove_me" ng-repeat-end on-finish-directive style="display:none"></tr>
+</tbody>
+</table>
+
+</div>
+
+<script>
+var app = angular.module('myApp', []);
+
+app.directive('onFinishDirective', function($timeout) {
+	return {
+		restrict: 'A',
+		link: function(scope, element, attr) {
+			if (scope.$last === true) {				
+				$timeout(function () {		
+					$(document).ready(function() {
+						$('tr.remove_me').remove();
+					});
+					var js = document.createElement("script");
+					js.type = "text/javascript";
+					js.src = "jquery.stickyheader.js";
+					document.body.appendChild(js);
+				})
+			}
+		}
+	};
+});
+
+app.controller('customersCtrl', function($scope, $http) {
+
+  $http.get("json.json")
+  .success(function (response) {
+  	$scope.names = response.result; 
+  });
+  
+  $scope.countries=[{"id":"Africa","parent":"ALL","ord":1,"countchild":3},{"id":"Developed Asia","parent":"ALL","ord":1,"countchild":5},{"id":"Developed Europe","parent":"ALL","ord":1,"countchild":15},{"id":"Emerging Asia","parent":"ALL","ord":1,"countchild":8},{"id":"Emerging Europe","parent":"ALL","ord":1,"countchild":6},{"id":"Latin America","parent":"ALL","ord":1,"countchild":5},{"id":"Middle East","parent":"ALL","ord":1,"countchild":2},{"id":"North America","parent":"ALL","ord":1,"countchild":2},{"id":"EG","parent":"Africa","ord":2,"countchild":0},{"id":"MA","parent":"Africa","ord":2,"countchild":0},{"id":"ZA","parent":"Africa","ord":2,"countchild":0},{"id":"AU","parent":"Developed Asia","ord":2,"countchild":0},{"id":"HK","parent":"Developed Asia","ord":2,"countchild":0},{"id":"JP","parent":"Developed Asia","ord":2,"countchild":0},{"id":"NZ","parent":"Developed Asia","ord":2,"countchild":0},{"id":"SG","parent":"Developed Asia","ord":2,"countchild":0},{"id":"AT","parent":"Developed Europe","ord":2,"countchild":0},{"id":"BE","parent":"Developed Europe","ord":2,"countchild":0},{"id":"CH","parent":"Developed Europe","ord":2,"countchild":0},{"id":"DE","parent":"Developed Europe","ord":2,"countchild":0},{"id":"DK","parent":"Developed Europe","ord":2,"countchild":0},{"id":"ES","parent":"Developed Europe","ord":2,"countchild":0},{"id":"FI","parent":"Developed Europe","ord":2,"countchild":0},{"id":"FR","parent":"Developed Europe","ord":2,"countchild":0},{"id":"GB","parent":"Developed Europe","ord":2,"countchild":0},{"id":"IE","parent":"Developed Europe","ord":2,"countchild":0},{"id":"IT","parent":"Developed Europe","ord":2,"countchild":0},{"id":"NL","parent":"Developed Europe","ord":2,"countchild":0},{"id":"NO","parent":"Developed Europe","ord":2,"countchild":0},{"id":"PT","parent":"Developed Europe","ord":2,"countchild":0},{"id":"SE","parent":"Developed Europe","ord":2,"countchild":0},{"id":"CN","parent":"Emerging Asia","ord":2,"countchild":0},{"id":"ID","parent":"Emerging Asia","ord":2,"countchild":0},{"id":"IN","parent":"Emerging Asia","ord":2,"countchild":0},{"id":"KR","parent":"Emerging Asia","ord":2,"countchild":0},{"id":"MY","parent":"Emerging Asia","ord":2,"countchild":0},{"id":"PH","parent":"Emerging Asia","ord":2,"countchild":0},{"id":"TH","parent":"Emerging Asia","ord":2,"countchild":0},{"id":"TW","parent":"Emerging Asia","ord":2,"countchild":0},{"id":"CZ","parent":"Emerging Europe","ord":2,"countchild":0},{"id":"GR","parent":"Emerging Europe","ord":2,"countchild":0},{"id":"HU","parent":"Emerging Europe","ord":2,"countchild":0},{"id":"PL","parent":"Emerging Europe","ord":2,"countchild":0},{"id":"RU","parent":"Emerging Europe","ord":2,"countchild":0},{"id":"TR","parent":"Emerging Europe","ord":2,"countchild":0},{"id":"BR","parent":"Latin America","ord":2,"countchild":0},{"id":"CL","parent":"Latin America","ord":2,"countchild":0},{"id":"CO","parent":"Latin America","ord":2,"countchild":0},{"id":"MX","parent":"Latin America","ord":2,"countchild":0},{"id":"PE","parent":"Latin America","ord":2,"countchild":0},{"id":"AE","parent":"Middle East","ord":2,"countchild":0},{"id":"IL","parent":"Middle East","ord":2,"countchild":0},{"id":"CA","parent":"North America","ord":2,"countchild":0},{"id":"US","parent":"North America","ord":2,"countchild":0}];
+});
+</script>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+		<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-throttle-debounce/1.1/jquery.ba-throttle-debounce.min.js"></script>
+</body>
+</html>
